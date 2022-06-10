@@ -1,0 +1,20 @@
+version: '3.7'
+
+services:
+  xepelin-rabbitmq:
+    image: rabbitmq:3-management
+    container_name: xepelin-rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      - "RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit log_levels [{connection,warning},{channel,warning}]"
+  xepelin-dynamo:
+    image:  amazon/dynamodb-local
+    container_name: xepelin-dynamo
+    restart: always
+    volumes:
+      -  ./tmp/dynamodb-data:/home/dynamodblocal/data
+    ports:
+      - 8000:8000
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal/data/"
