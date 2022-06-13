@@ -1,21 +1,41 @@
-import { createReadStream } from 'fs';
+import { createReadStream, existsSync } from 'fs';
 import { createInterface } from 'readline';
+import { NotFoundError } from '../errors/errors';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type LineApplier = (line: string) => void;
+export type LineApplier = (line: string, index: number) => void;
 
 export class Reader {
+    private fileName: string;
+    private extension: string;
     private filePath: string;
 
-    constructor(filePath: string) {
-        this.filePath = filePath;
+    constructor(directory: string, fileName: string, extension: string) {
+        this.fileName = fileName;
+        this.extension = extension;
+        this.filePath = `${directory}/${this.fileName}.${this.extension}`;
     }
 
-    applyOnEachLine(applier: LineApplier) {
-        const lineReader = createInterface({
-            input: createReadStream(this.filePath),
+    applyOnEachLine(applier: LineApplier, skipHeaders = true) {
+        if (!existsSync(this.filePath)) {
+            throw new NotFoundError(`The file ${this.fileName}.${this.extension} not exists`);
+        }
+
+        const input = createReadStream(this.filePath, { start: 10 });
+        const lineReader = createInterface({ input });
+
+        const data: string[] = [];
+
+        lineReader.on('line', (line: string) => {
+            data.push(line);
         });
 
-        lineReader.on('line', applier);
+        lineReader.on('close', () => {
+            let index = skipHeaders ? 1 : 0;
+
+            for (index; index < data.length; index++) {
+                applier(data[index], index);
+            }
+        });
     }
 }

@@ -12,4 +12,4 @@ const skip = () => {
     return env != 'development';
 };
 
-export const casaiMorgan = morgan(':method :url :status :res[content-length]', { stream, skip });
+export const loggerMorgan = morgan(':method :url :status :res[content-length]', { stream, skip });

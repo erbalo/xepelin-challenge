@@ -1,6 +1,6 @@
 import { Channel, ConsumeMessage } from 'amqplib';
-import { plainToClass } from 'class-transformer';
-import { inject, injectable } from 'tsyringe';
+import { plainToClass, plainToInstance } from 'class-transformer';
+import { autoInjectable, inject, injectable, singleton } from 'tsyringe';
 import { Logger as LoggerFactory, RabbitConnection, RabbitHandler } from '../../commons';
 import { Invoice } from '../representations/invoice';
 import InvoiceService from '../services/invoice.service';
@@ -14,12 +14,12 @@ class SaveInvoiceHandler implements RabbitHandler {
     private invoiceService: InvoiceService;
 
     constructor(
-        @inject('RabbitConnection') rabitConnection: RabbitConnection,
-        @inject('SaveInvoceQueue') queue: string,
-        @inject('InvoiceService') invoiceService: InvoiceService,
+        @inject('SaveInvoiceQueue') queue: string,
+        @inject('RabbitConnection') rabbitConnection: RabbitConnection,
+        invoiceService: InvoiceService,
     ) {
         this.queue = queue;
-        this.rabbitConnection = rabitConnection;
+        this.rabbitConnection = rabbitConnection;
         this.invoiceService = invoiceService;
     }
 
@@ -30,11 +30,11 @@ class SaveInvoiceHandler implements RabbitHandler {
                 if (msg) {
                     try {
                         const requestJson = JSON.parse(msg.content.toString());
-                        const invoice = plainToClass(Invoice, requestJson, { excludeExtraneousValues: true });
+                        const invoice = plainToInstance(Invoice, requestJson, { excludeExtraneousValues: true });
                         await this.invoiceService.save(invoice);
                     } catch (err: unknown) {
                         const { message } = err as Error;
-                        Logger.error(message);
+                        Logger.error(message, err);
                     } finally {
                         channel.ack(msg);
                     }

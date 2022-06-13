@@ -1,0 +1,5 @@
+invoiceId,issuerId,receiverId,amount,issueDate,paymentDate
+16,24,25,88294,2022-01-02,2022-02-03
+1,2,2,
+
+1,5,7,7

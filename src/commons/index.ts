@@ -1,3 +1,5 @@
+export * from './errors/errors';
+
 export * as Logger from './logger/logger';
 export * as ServerUtil from './server/server.util';
 export * as Middleware from './middleware/morgan.middleware';

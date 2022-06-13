@@ -1,7 +1,8 @@
 import { attribute, hashKey, table } from '@aws/dynamodb-data-mapper-annotations';
 import { DynamoDB } from 'aws-sdk';
+import moment from 'moment';
 
-const dateMarshall = (value: Date): DynamoDB.AttributeValue => ({ S: value.toString() } as DynamoDB.AttributeValue);
+const dateMarshall = (value: Date): DynamoDB.AttributeValue => ({ S: moment(value).format('YYYY-MM-DD') } as DynamoDB.AttributeValue);
 const dateUnmarshall = ({ S }: DynamoDB.AttributeValue): Date | undefined => (S ? new Date(S) : undefined);
 
 export const ISSUER_GSI = 'issuer-idx';
@@ -12,25 +13,32 @@ class InvoiceEntity {
     @hashKey()
     id?: number;
 
-    @attribute({ type: 'Custom', marshall: dateMarshall, unmarshall: dateUnmarshall })
-    issue_date: Date;
-
-    @attribute({ type: 'Custom', marshall: dateMarshall, unmarshall: dateUnmarshall })
-    payment_date: Date;
+    @attribute({ attributeName: 'issue_date', type: 'Custom', marshall: dateMarshall, unmarshall: dateUnmarshall })
+    issueDate: Date;
 
     @attribute({
+        attributeName: 'payment_date',
+        type: 'Custom',
+        marshall: dateMarshall,
+        unmarshall: dateUnmarshall,
+    })
+    paymentDate: Date;
+
+    @attribute({
+        attributeName: 'issuer_id',
         indexKeyConfigurations: {
             [ISSUER_GSI]: 'HASH',
         },
     })
-    issuer_id: number;
+    issuerId: number;
 
     @attribute({
+        attributeName: 'receiver_id',
         indexKeyConfigurations: {
             [RECEIVER_GSI]: 'HASH',
         },
     })
-    receiver_id: number;
+    receiverId: number;
 
     @attribute()
     amount: number;

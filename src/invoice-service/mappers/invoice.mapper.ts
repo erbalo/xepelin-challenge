@@ -9,10 +9,10 @@ class InvoiceMapper extends Mapper<Invoice, InvoiceEntity> {
         const entity = new InvoiceEntity();
         entity.id = invoice.id;
         entity.amount = invoice.amount;
-        entity.issue_date = invoice.issue_date;
-        entity.payment_date = invoice.payment_date;
-        entity.issuer_id = invoice.issuer_id;
-        entity.receiver_id = invoice.receiver_id;
+        entity.issueDate = invoice.issueDate;
+        entity.paymentDate = invoice.paymentDate;
+        entity.issuerId = invoice.issuerId;
+        entity.receiverId = invoice.receiverId;
 
         return entity;
     }
@@ -21,10 +21,10 @@ class InvoiceMapper extends Mapper<Invoice, InvoiceEntity> {
         const invoice = new Invoice();
         invoice.id = entity.id;
         invoice.amount = entity.amount;
-        invoice.issue_date = entity.issue_date;
-        invoice.payment_date = entity.payment_date;
-        invoice.issuer_id = entity.issuer_id;
-        invoice.receiver_id = entity.receiver_id;
+        invoice.issueDate = entity.issueDate;
+        invoice.paymentDate = entity.paymentDate;
+        invoice.issuerId = entity.issuerId;
+        invoice.receiverId = entity.receiverId;
 
         return invoice;
     }

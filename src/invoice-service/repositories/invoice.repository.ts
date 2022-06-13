@@ -1,4 +1,4 @@
-import { autoInjectable, inject, injectable } from 'tsyringe';
+import { autoInjectable, injectable } from 'tsyringe';
 import { Logger as LoggerFactory } from '../../commons';
 import DynamoConfiguration from '../../configurations/dynamo.configuration';
 import InvoiceEntity from '../entities/invoice.entity';
@@ -6,7 +6,7 @@ import { AttributePath, FunctionExpression } from '@aws/dynamodb-expressions';
 
 const Logger = LoggerFactory.getLogger(module);
 
-@autoInjectable()
+@injectable()
 class InvoiceRepository {
     private dynamoConfiguration: DynamoConfiguration;
 

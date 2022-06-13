@@ -1,12 +1,13 @@
-import { autoInjectable, inject, injectable } from 'tsyringe';
+import { injectable } from 'tsyringe';
 import { Invoice } from '../representations/invoice';
 import InvoiceMapper from '../mappers/invoice.mapper';
 import { Logger as LoggerFactory } from '../../commons';
 import InvoiceRepository from '../repositories/invoice.repository';
+import InvoiceEntity from '../entities/invoice.entity';
 
 const Logger = LoggerFactory.getLogger(module);
 
-@autoInjectable()
+@injectable()
 class InvoiceService {
     private invoiceMapper: InvoiceMapper;
     private invoiceRepository: InvoiceRepository;
@@ -16,10 +17,10 @@ class InvoiceService {
         this.invoiceRepository = invoiceRepository;
     }
 
-    async save(invoice: Invoice) {
-        Logger.info(`Request to save :`, JSON.stringify(invoice));
+    async save(invoice: Invoice): Promise<InvoiceEntity> {
+        Logger.info(`Invoice to save :`, JSON.stringify(invoice));
         const toSave = this.invoiceMapper.fromDto(invoice);
-        await this.invoiceRepository.save(toSave);
+        return await this.invoiceRepository.save(toSave);
     }
 }
 

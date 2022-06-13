@@ -1,8 +1,8 @@
 import amqp, { Connection, Channel } from 'amqplib';
-import { injectable } from 'tsyringe';
+import { injectable, singleton } from 'tsyringe';
 import { RabbitConnection } from '../commons';
 
-@injectable()
+@singleton()
 class RabbitConfiguration {
     private connection: Connection;
     private channel: Channel;

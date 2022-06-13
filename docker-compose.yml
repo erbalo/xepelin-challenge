@@ -18,3 +18,15 @@ services:
     ports:
       - 8000:8000
     command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal/data/"
+  xepelin-db:
+    image: postgres
+    container_name: xepelin-db
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=businessman
+      - POSTGRES_PASSWORD=mybusiness
+      - POSTGRES_DB=business
+    volumes:
+      - ./tmp/postgres-data:/var/lib/postgresql/data
