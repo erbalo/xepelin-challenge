@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { injectable } from 'tsyringe';
 import { Logger as LoggerFactory } from '../../commons';
 import { Invoice } from '../../invoice-service/representations/invoice';
@@ -6,7 +7,7 @@ import LedgerMapper from '../mappers/ledger.mapper';
 import BusinessRepository from '../repositories/business.repository';
 import LedgerRepository from '../repositories/ledger.repository';
 import { Currency } from '../representations/currency.representation';
-import { LedgerOperation, LedgerType } from '../representations/ledger.representation';
+import { LedgerOperation, LedgerType, ReportFrequency, ReportOperation, ReportSummary } from '../representations/ledger.representation';
 
 const Logger = LoggerFactory.getLogger(module);
 
@@ -49,15 +50,27 @@ class LedgerService {
             await this.applyOperation(receiverOperation);
         } else {
             Logger.error(
-                `Business from issuer[${issuerOperation.businessId}] or receiver[${receiverOperation.businessId}] not exists, from the invoce [${invoice.id}]`,
+                `Business from issuer[${issuerOperation.businessId}] or receiver[${receiverOperation.businessId}] not exists, from the invoice [${invoice.id}]`,
             );
         }
     }
 
     async applyOperation(ledgerOperation: LedgerOperation): Promise<LedgerEntity> {
+        Logger.info('Ledger operation to save:', JSON.stringify(ledgerOperation));
         const entity = this.ledgerMapper.fromDto(ledgerOperation);
         const operation = await this.ledgerRepository.save(entity);
         return operation;
+    }
+
+    async retriveSummary(businessId: number, reportOperation: ReportOperation): Promise<ReportSummary[]> {
+        const { fromDate = new Date(), quantity = 5, frequency = ReportFrequency.DAYS } = reportOperation;
+        const toDate = moment(fromDate).add(quantity, frequency).toDate();
+        const operation = { fromDate, quantity, frequency, toDate };
+
+        console.log(fromDate);
+        console.log(toDate);
+
+        return await this.ledgerRepository.retriveSummary(businessId, operation);
     }
 }
 

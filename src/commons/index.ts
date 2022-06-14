@@ -1,3 +1,5 @@
+import type { NextFunction, Request, RequestHandler, Response } from 'express';
+
 export * from './errors/errors';
 
 export * as Logger from './logger/logger';
@@ -19,3 +21,9 @@ export abstract class Mapper<D, E> {
         return dtos.map(this.fromDto);
     }
 }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+//export const asyncHandler = (fn: any) => (req: Request, res: Response, next: NextFunction) => Promise.resolve(fn(req, res, next)).catch(next);
+
+export const asyncHandler = (fn: RequestHandler) => (req: Request, res: Response, next: NextFunction) =>
+    Promise.resolve(fn(req, res, next)).catch(next);

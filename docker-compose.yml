@@ -8,7 +8,7 @@ services:
       - 5672:5672
       - 15672:15672
     environment:
-      - "RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit log_levels [{connection,warning},{channel,warning}]"
+      - "RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit channel_max 165000"
   xepelin-dynamo:
     image:  amazon/dynamodb-local
     container_name: xepelin-dynamo

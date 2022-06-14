@@ -4,7 +4,7 @@ import * as Logger from '../logger/logger';
 const logger = Logger.getLogger(module);
 
 const stream: StreamOptions = {
-    write: message => logger.http(message),
+    write: message => logger.http(message.trim().trimEnd()),
 };
 
 const skip = () => {

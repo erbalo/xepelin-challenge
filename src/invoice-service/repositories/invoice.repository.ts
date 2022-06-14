@@ -1,5 +1,5 @@
-import { autoInjectable, injectable } from 'tsyringe';
-import { Logger as LoggerFactory } from '../../commons';
+import { injectable } from 'tsyringe';
+import { DuplicatedError, Logger as LoggerFactory } from '../../commons';
 import DynamoConfiguration from '../../configurations/dynamo.configuration';
 import InvoiceEntity from '../entities/invoice.entity';
 import { AttributePath, FunctionExpression } from '@aws/dynamodb-expressions';
@@ -22,10 +22,15 @@ class InvoiceRepository {
             });
         } catch (err) {
             const { message, name } = err as Error;
+
+            if (name === 'ConditionalCheckFailedException') {
+                throw new DuplicatedError(message);
+            }
+
             Logger.error(name, message);
         }
 
-        return Promise.resolve(null);
+        return null;
     }
 }
 

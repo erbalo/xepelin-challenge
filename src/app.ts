@@ -5,9 +5,10 @@ import express from 'express';
 import expressReqId from 'express-request-id';
 import { handleError, Logger as LoggerFactory, Middleware } from './commons';
 import { bindQueueConsumersIoC, queueNamesIoC, rabbitIoC } from './shared/container';
-import invoiceRouter from './api/routes/invoice.route';
 import { container } from 'tsyringe';
 import InvoiceRouter from './api/routes/invoice.route';
+import BusinessNetworkRouter from './api/routes/business.network.route';
+import BusinessRouter from './api/routes/business.route';
 
 const Logger = LoggerFactory.getLogger(module);
 //dotenv.config();
@@ -48,7 +49,11 @@ class App {
 
     private routes() {
         const invoiceRouter = container.resolve(InvoiceRouter);
+        const businessNetworkRouter = container.resolve(BusinessNetworkRouter);
+        const businessRouter = container.resolve(BusinessRouter);
         this.express.use('/api/invoices', invoiceRouter.routes());
+        this.express.use('/api/networks', businessNetworkRouter.routes());
+        this.express.use('/api/businesses', businessRouter.routes());
         Logger.info('Routes loaded correctly...');
     }
 

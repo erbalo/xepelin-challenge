@@ -3,7 +3,6 @@ import { Invoice } from '../representations/invoice';
 import InvoiceMapper from '../mappers/invoice.mapper';
 import { Logger as LoggerFactory } from '../../commons';
 import InvoiceRepository from '../repositories/invoice.repository';
-import InvoiceEntity from '../entities/invoice.entity';
 
 const Logger = LoggerFactory.getLogger(module);
 
@@ -17,10 +16,11 @@ class InvoiceService {
         this.invoiceRepository = invoiceRepository;
     }
 
-    async save(invoice: Invoice): Promise<InvoiceEntity> {
-        Logger.info(`Invoice to save :`, JSON.stringify(invoice));
+    async save(invoice: Invoice): Promise<Invoice> {
+        Logger.info(`Invoice to save:`, JSON.stringify(invoice));
         const toSave = this.invoiceMapper.fromDto(invoice);
-        return await this.invoiceRepository.save(toSave);
+        const saved = await this.invoiceRepository.save(toSave);
+        return this.invoiceMapper.fromEntity(saved);
     }
 }
 

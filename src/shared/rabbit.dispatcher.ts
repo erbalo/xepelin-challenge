@@ -1,25 +1,22 @@
 import { instanceToPlain } from 'class-transformer';
 import { autoInjectable, inject } from 'tsyringe';
 import { Invoice } from '../invoice-service/representations/invoice';
-import { Logger as LoggerFactory, RabbitConnection } from '../commons';
-
-const Logger = LoggerFactory.getLogger(module);
+import { RabbitConnection } from '../commons';
 
 @autoInjectable()
 class RabbitDispatcher {
-    private queue: string;
     private rabbitConnection: RabbitConnection;
+    private invoicePipelineQueue: string;
 
-    constructor(@inject('SaveInvoiceQueue') queue: string, @inject('RabbitConnection') rabbitConnection: RabbitConnection) {
-        this.queue = queue;
+    constructor(@inject('InvoicePipelineQueue') invoicePipelineQueue: string, @inject('RabbitConnection') rabbitConnection: RabbitConnection) {
         this.rabbitConnection = rabbitConnection;
+        this.invoicePipelineQueue = invoicePipelineQueue;
     }
 
     publishInvoice = (invoice: Invoice): void => {
         const { channel } = this.rabbitConnection;
         const json = JSON.stringify(instanceToPlain(invoice));
-        Logger.info(json);
-        channel.sendToQueue(this.queue, Buffer.from(json));
+        channel.sendToQueue(this.invoicePipelineQueue, Buffer.from(json));
     };
 }
 

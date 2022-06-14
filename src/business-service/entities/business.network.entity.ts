@@ -12,7 +12,7 @@ class BusinessNetworkEntity {
     reportingDate: Date;
 
     @Column({ name: 'issued_invoices', type: 'bigint' })
-    issuedInvoces: number;
+    issuedInvoices: number;
 
     @Column({ name: 'received_invoices', type: 'bigint' })
     receivedInvoices: number;

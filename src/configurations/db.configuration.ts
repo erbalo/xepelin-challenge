@@ -21,7 +21,10 @@ class DbConfiguration {
             password: 'mybusiness',
             database: 'business',
             entities: [BusinessEntity, LedgerEntity, BusinessNetworkEntity],
-            logging: ['query', 'error'],
+            extra: {
+                max: 10,
+            },
+            //logging: ['query', 'error'],
         });
 
         const connection = await dataSource.initialize();

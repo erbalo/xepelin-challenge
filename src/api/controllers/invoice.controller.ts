@@ -11,12 +11,12 @@ class InvoiceController {
         this.invoiceReaderService = invoiceReaderService;
     }
 
-    processFile = (req: Request, res: Response) => {
+    processFile = async (req: Request, res: Response) => {
         const { file_name: fileName, extension } = req.query;
         const dir = dirname(require.main.filename);
         const inputVolume = dir.replace(/\/src$/, '/input');
 
-        this.invoiceReaderService.processVolume(inputVolume, fileName.toString(), extension.toString());
+        await this.invoiceReaderService.processVolume(inputVolume, fileName.toString(), extension.toString());
 
         return res.sendStatus(202);
     };

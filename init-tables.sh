@@ -10,13 +10,13 @@ aws dynamodb create-table \
         AttributeName=receiver_id,AttributeType=N \
     --key-schema \
         AttributeName=id,KeyType=HASH \
-    --provisioned-throughput ReadCapacityUnits=10,WriteCapacityUnits=10 \
+    --provisioned-throughput ReadCapacityUnits=15,WriteCapacityUnits=15 \
     --global-secondary-indexes "IndexName=issuer-idx, \
         KeySchema=[{AttributeName=issuer_id,KeyType=HASH}], \
         Projection={ProjectionType=ALL}, \
-        ProvisionedThroughput={ReadCapacityUnits=10,WriteCapacityUnits=10}" \
+        ProvisionedThroughput={ReadCapacityUnits=15,WriteCapacityUnits=15}" \
         "IndexName=receiver-idx, \
         KeySchema=[{AttributeName=receiver_id,KeyType=HASH}], \
         Projection={ProjectionType=ALL}, \
-        ProvisionedThroughput={ReadCapacityUnits=10,WriteCapacityUnits=10}" \
+        ProvisionedThroughput={ReadCapacityUnits=15,WriteCapacityUnits=15}" \
     --no-cli-pager

@@ -1,5 +1,5 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
-import { LedgerType } from '../representations/business.balance.representation';
+import { LedgerType } from '../representations/ledger.representation';
 import { Currency } from '../representations/currency.representation';
 
 @Entity({ name: 'ledgers' })

@@ -1,9 +1,8 @@
-import { Channel, ConsumeMessage } from 'amqplib';
-import { plainToClass, plainToInstance } from 'class-transformer';
-import { autoInjectable, inject, injectable, singleton } from 'tsyringe';
-import { Logger as LoggerFactory, RabbitConnection, RabbitHandler } from '../../commons';
-import { Invoice } from '../representations/invoice';
+import { inject, injectable } from 'tsyringe';
+import { AmqpRpcProducer } from 'amqp-rpc-lib';
+import { DuplicatedError, Logger as LoggerFactory, RabbitConnection, RabbitHandler } from '../../commons';
 import InvoiceService from '../services/invoice.service';
+import { Invoice } from '../representations/invoice';
 
 const Logger = LoggerFactory.getLogger(module);
 
@@ -18,31 +17,43 @@ class SaveInvoiceHandler implements RabbitHandler {
         @inject('RabbitConnection') rabbitConnection: RabbitConnection,
         invoiceService: InvoiceService,
     ) {
+        this.invoiceService = invoiceService;
         this.queue = queue;
         this.rabbitConnection = rabbitConnection;
-        this.invoiceService = invoiceService;
     }
 
     async bind(): Promise<void> {
-        const consumer =
-            (channel: Channel) =>
-            async (msg: ConsumeMessage | null): Promise<void> => {
-                if (msg) {
-                    try {
-                        const requestJson = JSON.parse(msg.content.toString());
-                        const invoice = plainToInstance(Invoice, requestJson, { excludeExtraneousValues: true });
-                        await this.invoiceService.save(invoice);
-                    } catch (err: unknown) {
-                        const { message } = err as Error;
-                        Logger.error(message, err);
-                    } finally {
-                        channel.ack(msg);
-                    }
-                }
-            };
+        await this.rabbitConnection.channel.assertQueue(this.queue, {
+            deadLetterRoutingKey: this.queue + '.expired',
+            deadLetterExchange: this.queue + '.direct',
+            messageTtl: 30_000,
+            durable: false,
+        });
 
-        await this.rabbitConnection.channel.assertQueue(this.queue);
-        await this.rabbitConnection.channel.consume(this.queue, consumer(this.rabbitConnection.channel));
+        const producer = new AmqpRpcProducer(this.rabbitConnection.connection, {
+            requestsQueue: this.queue,
+        });
+
+        producer.registerListener(async request => {
+            const invoiceRequest = request as Invoice;
+
+            try {
+                const invoice = await this.invoiceService.save(invoiceRequest);
+                return { status_code: 201, data: invoice };
+            } catch (err) {
+                if (err instanceof DuplicatedError) {
+                    const message = `Not possible to save duplicated invoices using id[${invoiceRequest.id}]`;
+                    Logger.error(message);
+                    return { status_code: 406, message };
+                } else {
+                    const { message } = err as Error;
+                    Logger.error('Unkown error', message);
+                    return { status_code: 422, message: 'Not possible to save the invoice, weird reason' };
+                }
+            }
+        });
+
+        await producer.start();
     }
 }
 

@@ -1,5 +1,5 @@
 import amqp, { Connection, Channel } from 'amqplib';
-import { injectable, singleton } from 'tsyringe';
+import { singleton } from 'tsyringe';
 import { RabbitConnection } from '../commons';
 
 @singleton()

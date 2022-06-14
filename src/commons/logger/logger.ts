@@ -61,7 +61,7 @@ const getLabel = function (callingModule: any) {
 
 const buildTransports = (): Transport[] => {
     return [
-        new winston.transports.Console(),
+        new winston.transports.Console({ stderrLevels: [] }),
         new winston.transports.File({
             filename: 'logs/errors.log',
             level: 'error',

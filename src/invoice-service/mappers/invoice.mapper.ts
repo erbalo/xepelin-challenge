@@ -25,6 +25,8 @@ class InvoiceMapper extends Mapper<Invoice, InvoiceEntity> {
         invoice.paymentDate = entity.paymentDate;
         invoice.issuerId = entity.issuerId;
         invoice.receiverId = entity.receiverId;
+        invoice.createdAt = entity.createdAt;
+        invoice.updatedAt = entity.updatedAt;
 
         return invoice;
     }
