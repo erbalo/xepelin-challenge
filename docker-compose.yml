@@ -24,7 +24,7 @@ services:
       - DB_USERNAME=businessman
       - DB_PASSWORD=mybusiness
       - DB=business
-      - CSV_SPLIT_LIMIT=350
+      - CSV_SPLIT_LIMIT=300
       - CHUNK_WORKER_CRON=*/1 * * * *
 
 networks:

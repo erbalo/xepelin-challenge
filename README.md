@@ -9,13 +9,17 @@
 
 ## Contenido
 
-* [Stack tecnológico](#stack-tecnologico)
+* [Stack tecnológico](#stack-tecnológico)
 * [Requisitos](#requisitos)
 * [Arquitectura propuesta](#arquitectura-propuesta)
 * [Como correr la aplicación](#como-correr-la-aplicación)
+    - [Esto puede ser de gran ayuda](#esto-puede-ser-de-gran-ayuda)
 	- [Importante, leer esta sección](#importante-leer-esta-sección)
 * [Consideraciones](#consideraciones)
     - [Make clean](#make-clean)
+    - [Obtener top de negocios](#obtener-top-de-negocios)
+    - [Obtener ingresos y egresos](#obtener-ingresos-y-egresos)
+    - [Procesar archivo](#procesar-archivo)
 * [Mejoras](#mejoras)
 
 ## Stack tecnológico
@@ -45,6 +49,25 @@ Para su facilidad se ha colocado un *Makefile* en la raíz del proyecto
 Lo único que tiene que correr es:
 
 ```
+$ make run
+```
+
+## Esto puede ser de gran ayuda
+
+Debido a que el archivo a procesar es demasiado grande y tardaría apróximadamente 2~3 horas con la configuración propuesta, he colocado en la raíz de este proyecto el backup del volumen de datos tanto para DynamoDB y PostgreSQL
+
+Si lo de sea usar, es __muy importante__ que ejecute el siguiente comando antes de ejecutar el comando `make run`
+
+```shell
+$ make pre-context
+$ make run
+```
+
+Si por error, inicio ya la aplicación es posible, ejecutando el siguiente flujo:
+
+```shell
+$ make down-all
+$ make pre-context
 $ make run
 ```
 
@@ -88,6 +111,24 @@ En caso de que la variable CSV_SPLIT_LIMIT tenga un valor mayor a 300, puede que
 Puede que tenga otras imágenes corriendo sobre los mismos puertos, en ese caso. Se puede recomendar cerrar los puertos y detener los contenedores. Pero también es posibles cambiarlos sobre ambos archivos `docker-compose.yml` y `docker-compose-shared.yml`, esa decisión es bajo su elección.
 
 Ya que no alcance a colocar un swagger, estos son los posbiles endpoints para utilizar una vez iniciada la aplicación.
+
+
+### Make clean
+
+Una vez probado su funcionamiento se puede destruir todo usando:
+
+```
+$ make clean
+```
+
+Si solo desea reiniciar todo y volver a correr, puede usar el siguiente comando.
+
+```
+$ make down-all
+$ make run
+```
+
+> __Nota__: Lo anterior, incluso reinicia los datos previos guardados en la base de datos.
 
 ### Obtener top de negocios
 
@@ -182,6 +223,7 @@ Response:
     }
 }
 ```
+
 
 ## Mejoras
 

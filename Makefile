@@ -7,10 +7,13 @@ run:
 	fi
 	$(MAKE) app
 
+pre-context:
+	tar -xzf postgres-data.tar.gz
+	tar -xzf dynamodb-data.tar.gz
+
 clean:
 	$(MAKE) down-all
 	$(MAKE) force-destroy
-	rm -rf tmp
 
 down-all:
 	$(MAKE) down-app
