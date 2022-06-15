@@ -1,0 +1,43 @@
+version: '3.7'
+
+services:
+  xepelin-rabbitmq:
+    image: rabbitmq:3-management
+    container_name: xepelin-rabbitmq
+    ports:
+      - 5672
+      - 15672:15672
+    environment:
+      - "RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit channel_max 165000"
+    networks:
+      - xepelin-shared-network
+  xepelin-dynamo:
+    image:  amazon/dynamodb-local
+    container_name: xepelin-dynamo
+    restart: always
+    volumes:
+      -  ./tmp/dynamodb-data:/home/dynamodblocal/data
+    ports:
+      - 8000:8000
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal/data/"
+    networks:
+      - xepelin-shared-network
+  xepelin-db:
+    image: postgres
+    container_name: xepelin-db
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=businessman
+      - POSTGRES_PASSWORD=mybusiness
+      - POSTGRES_DB=business
+    volumes:
+      - ./scripts/business_schema.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./tmp/postgres-data:/var/lib/postgresql/data
+    networks:
+      - xepelin-shared-network
+
+networks:
+  xepelin-shared-network:
+    name: xepelin-shared-network

@@ -1,32 +1,33 @@
 version: '3.7'
 
 services:
-  xepelin-rabbitmq:
-    image: rabbitmq:3-management
-    container_name: xepelin-rabbitmq
+  app:
+    image: xepelin-challenge-app
+    container_name: xepelin-challenge-app
+    build:
+      context: .
+    command: bash -c "./scripts/wait-for.sh -t 10 xepelin-rabbitmq:5672 -- npm run start"
     ports:
-      - 5672:5672
-      - 15672:15672
-    environment:
-      - "RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit channel_max 165000"
-  xepelin-dynamo:
-    image:  amazon/dynamodb-local
-    container_name: xepelin-dynamo
-    restart: always
+      - 8080:8080
     volumes:
-      -  ./tmp/dynamodb-data:/home/dynamodblocal/data
-    ports:
-      - 8000:8000
-    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal/data/"
-  xepelin-db:
-    image: postgres
-    container_name: xepelin-db
-    restart: always
-    ports:
-      - 5432:5432
+      - ./input:/xepelin/app/input
+      - ./tmp/app-data/logs:/xepelin/app/logs
     environment:
-      - POSTGRES_USER=businessman
-      - POSTGRES_PASSWORD=mybusiness
-      - POSTGRES_DB=business
-    volumes:
-      - ./tmp/postgres-data:/var/lib/postgresql/data
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_REGION=local
+      - RABBITMQ_URL=amqp://xepelin-rabbitmq
+      - ENDPOINT_DYNAMO=http://xepelin-dynamo:8000
+      - IS_DIST=true
+      - DB_HOST=xepelin-db
+      - DB_PORT=5432
+      - DB_USERNAME=businessman
+      - DB_PASSWORD=mybusiness
+      - DB=business
+      - CSV_SPLIT_LIMIT=350
+      - CHUNK_WORKER_CRON=*/1 * * * *
+
+networks:
+  default:
+    external:
+      name: xepelin-shared-network

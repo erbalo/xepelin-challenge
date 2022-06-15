@@ -11,7 +11,7 @@ class BusinessNetworkController {
     }
 
     topNetwork = async (req: Request, res: Response) => {
-        const { limit } = req.query;
+        const { limit = 5 } = req.query;
         const topNetworks = await this.businessNetworkService.topNetwork(parseInt(limit.toString()));
 
         return res.send({

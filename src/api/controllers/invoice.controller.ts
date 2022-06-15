@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 import { autoInjectable } from 'tsyringe';
 import { dirname } from 'path';
-import InvoiceReaderService from '../../invoice-service/services/invoice.reader.service';
+import InvoiceReaderService from '../../invoice-worker/services/invoice.reader.service';
+import { BadRequestError } from '../../commons';
 
 @autoInjectable()
 class InvoiceController {
@@ -14,11 +15,28 @@ class InvoiceController {
     processFile = async (req: Request, res: Response) => {
         const { file_name: fileName, extension } = req.query;
         const dir = dirname(require.main.filename);
-        const inputVolume = dir.replace(/\/src$/, '/input');
 
-        await this.invoiceReaderService.processVolume(inputVolume, fileName.toString(), extension.toString());
+        if (!fileName || !extension) {
+            throw new BadRequestError('File name or extension is null');
+        }
 
-        return res.sendStatus(202);
+        let inputVolume = dir.replace(/\/src$/, '/input');
+        const isDist = process.env.IS_DIST || false;
+
+        if (isDist) {
+            inputVolume = dir.replace(/\/build$/, '/input');
+        }
+
+        const workerChunk = await this.invoiceReaderService.processVolume(
+            inputVolume,
+            fileName.toString(),
+            extension.toString(),
+        );
+
+        return res.send({
+            status: 202,
+            data: workerChunk,
+        });
     };
 }
 

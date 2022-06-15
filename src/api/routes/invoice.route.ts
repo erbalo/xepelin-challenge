@@ -1,6 +1,7 @@
 import { autoInjectable } from 'tsyringe';
 import { Router } from 'express';
 import InvoiceController from '../controllers/invoice.controller';
+import { asyncHandler } from '../../commons';
 
 @autoInjectable()
 class InvoiceRouter {
@@ -13,7 +14,7 @@ class InvoiceRouter {
     routes(): Router {
         const invoiceRouter = Router();
 
-        invoiceRouter.post('/process', this.invoiceController.processFile);
+        invoiceRouter.post('/process', asyncHandler(this.invoiceController.processFile));
 
         return invoiceRouter;
     }

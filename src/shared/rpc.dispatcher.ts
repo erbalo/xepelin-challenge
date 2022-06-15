@@ -20,7 +20,7 @@ class RpcDispatcher {
     }
 
     async dispatch<T, R>(request: T, queueName: string): Promise<R> {
-        const timeout = 60_000;
+        const timeout = 120_000;
 
         const client = new AmpqRpcConsumer(this.rabbitConnection.connection, {
             requestsQueue: queueName,
@@ -53,7 +53,7 @@ class RpcDispatcher {
             throw new NotFoundError(data.message);
         }
 
-        throw new ServerError(`Error performing the dispatcher request with ${JSON.stringify(data)}`);
+        throw new ServerError(`Error performing the dispatcher request [${queueName}] with ${JSON.stringify(data)}`);
     }
 }
 

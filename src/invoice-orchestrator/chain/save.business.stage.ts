@@ -33,7 +33,9 @@ class SaveBusinessStage extends Stage {
             const savedReciver = await this.rpcDispatcher.dispatch<object, Business>(receiverMessage, this.queue);
 
             if (!savedIssuer || !savedReciver) {
-                Logger.error(`Not possible to save one of the business issuer[${issuerBusiness}] or receiver[${receiverBusiness}]`);
+                Logger.error(
+                    `Not possible to save one of the business issuer[${issuerBusiness}] or receiver[${receiverBusiness}]`,
+                );
                 return false;
             }
 

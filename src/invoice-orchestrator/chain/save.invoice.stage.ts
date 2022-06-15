@@ -20,7 +20,6 @@ class SaveInvoiceStage extends Stage {
     async execute(context: InvoiceContext): Promise<boolean> {
         try {
             const savedInvoice = await this.rpcDispatcher.dispatch<Invoice, Invoice>(context.invoice, this.queue);
-            console.log(savedInvoice);
 
             if (savedInvoice) {
                 return await this.checkNext(context);

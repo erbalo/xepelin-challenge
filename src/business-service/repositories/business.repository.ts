@@ -13,7 +13,10 @@ class BusinessRepository {
     async getBy(businessId: number): Promise<BusinessEntity> {
         const connection = await this.dbConfiguration.getConnection();
         const repo = connection.getRepository(BusinessEntity);
-        const business = await repo.createQueryBuilder('business').where('business.id = :businessId', { businessId }).getOne();
+        const business = await repo
+            .createQueryBuilder('business')
+            .where('business.id = :businessId', { businessId })
+            .getOne();
 
         return business;
     }

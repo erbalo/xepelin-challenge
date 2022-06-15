@@ -7,18 +7,16 @@ export type LineApplier = (line: string, index: number) => void;
 
 export class Reader {
     private fileName: string;
-    private extension: string;
     private filePath: string;
 
-    constructor(directory: string, fileName: string, extension: string) {
+    constructor(directory: string, fileName: string) {
         this.fileName = fileName;
-        this.extension = extension;
-        this.filePath = `${directory}/${this.fileName}.${this.extension}`;
+        this.filePath = `${directory}/${this.fileName}`;
     }
 
     applyOnEachLine(applier: LineApplier, skipHeaders = true) {
         if (!existsSync(this.filePath)) {
-            throw new NotFoundError(`The file ${this.fileName}.${this.extension} not exists`);
+            throw new NotFoundError(`The file ${this.fileName} not exists`);
         }
 
         const input = createReadStream(this.filePath, { start: 10 });

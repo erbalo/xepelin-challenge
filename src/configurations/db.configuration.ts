@@ -13,18 +13,23 @@ class DbConfiguration {
             return this.connection;
         }
 
+        const host = process.env.DB_HOST || 'localhost';
+        const port = process.env.DB_PORT || 5432;
+        const username = process.env.DB_USERNAME || 'businessman';
+        const password = process.env.DB_PASSWORD || 'mybusiness';
+        const database = process.env.DB || 'business';
+
         const dataSource = new DataSource({
             type: 'postgres',
-            host: 'localhost',
-            port: 5432,
-            username: 'businessman',
-            password: 'mybusiness',
-            database: 'business',
+            host: host,
+            port: Number(port),
+            username: username,
+            password: password,
+            database: database,
             entities: [BusinessEntity, LedgerEntity, BusinessNetworkEntity],
             extra: {
                 max: 10,
             },
-            //logging: ['query', 'error'],
         });
 
         const connection = await dataSource.initialize();

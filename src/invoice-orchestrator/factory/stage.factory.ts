@@ -26,8 +26,7 @@ class StageFactory {
 
     invoiceStagePipeline(): Stage {
         const stage: Stage = this.saveInvoiceStage;
-        //stage.linkWith(this.saveBusinessStage);
-        //.linkWith(this.saveLedgerStage).linkWith(this.saveNetworkStage);
+        stage.linkWith(this.saveBusinessStage).linkWith(this.saveLedgerStage).linkWith(this.saveNetworkStage);
 
         return stage;
     }

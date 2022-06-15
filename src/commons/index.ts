@@ -22,8 +22,11 @@ export abstract class Mapper<D, E> {
     }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-//export const asyncHandler = (fn: any) => (req: Request, res: Response, next: NextFunction) => Promise.resolve(fn(req, res, next)).catch(next);
-
 export const asyncHandler = (fn: RequestHandler) => (req: Request, res: Response, next: NextFunction) =>
     Promise.resolve(fn(req, res, next)).catch(next);
+
+export const delay = (ms: number) => {
+    return new Promise(resolve => {
+        setTimeout(resolve, ms);
+    });
+};

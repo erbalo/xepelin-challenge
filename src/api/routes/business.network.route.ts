@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { autoInjectable } from 'tsyringe';
+import { asyncHandler } from '../../commons';
 import BusinessNetworkController from '../controllers/business.network.controller';
 
 @autoInjectable()
@@ -13,7 +14,7 @@ class BusinessNetworkRouter {
     routes(): Router {
         const invoiceRouter = Router();
 
-        invoiceRouter.get('/top', this.businessNetworkController.topNetwork);
+        invoiceRouter.get('/top', asyncHandler(this.businessNetworkController.topNetwork));
 
         return invoiceRouter;
     }

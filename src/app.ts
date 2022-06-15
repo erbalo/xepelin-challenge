@@ -4,7 +4,7 @@ import express from 'express';
 //import dotenv from 'dotenv';
 import expressReqId from 'express-request-id';
 import { handleError, Logger as LoggerFactory, Middleware } from './commons';
-import { bindQueueConsumersIoC, queueNamesIoC, rabbitIoC } from './shared/container';
+import { bindQueueConsumersIoC, bindWorkers, queueNamesIoC, rabbitIoC } from './shared/container';
 import { container } from 'tsyringe';
 import InvoiceRouter from './api/routes/invoice.route';
 import BusinessNetworkRouter from './api/routes/business.network.route';
@@ -27,6 +27,9 @@ class App {
             this.middlewares();
             this.routes();
             this.errorHandling();
+        })();
+        (async () => {
+            this.workersContext();
         })();
     }
 
@@ -67,6 +70,11 @@ class App {
         queueNamesIoC();
         bindQueueConsumersIoC();
         Logger.info('IoC loaded correctly...');
+    }
+
+    private async workersContext() {
+        await bindWorkers();
+        Logger.info('Workers context started...');
     }
 }
 

@@ -1,9 +1,10 @@
 import { container } from 'tsyringe';
-import { RabbitConnection } from '../commons';
+import { delay, RabbitConnection } from '../commons';
 import RabbitConfiguration from '../configurations/rabbit.configuration';
 import SaveBusinessHandler from '../business-service/handlers/save.business.handler';
 import SaveInvoiceHandler from '../invoice-service/handlers/save.invoice.handler';
-import InvoicePipelineHandler from '../invoice-service/handlers/invoice.pipeline.handler';
+import InvoicePipelineHandler from '../invoice-orchestrator/handlers/invoice.pipeline.handler';
+import ProcessChunkWorker from '../invoice-worker/workers/process.chunk.worker';
 
 export const rabbitIoC = async (): Promise<void> => {
     const configuration = container.resolve(RabbitConfiguration);
@@ -26,5 +27,16 @@ export const bindQueueConsumersIoC = () => {
 
     handlers.forEach(async handler => {
         await handler.bind();
+    });
+};
+
+export const bindWorkers = async () => {
+    // Start the workers after the context loaded
+    await delay(10_000);
+    const processChunkWorker = container.resolve(ProcessChunkWorker);
+    const workers = [processChunkWorker];
+
+    workers.forEach(async worker => {
+        await worker.execute();
     });
 };

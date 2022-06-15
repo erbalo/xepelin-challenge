@@ -49,6 +49,7 @@ class SaveBusinessHandler implements RabbitHandler {
                 };
             } catch (e) {
                 Logger.error(e.message);
+                return { status_code: 500 };
             }
         });
 

@@ -32,6 +32,16 @@ export class NotFoundError extends Error {
     }
 }
 
+export class NotAcceptableError extends Error {
+    constructor(msg: string) {
+        super(msg);
+
+        Object.setPrototypeOf(this, NotAcceptableError.prototype);
+        this.name = NotAcceptableError.name;
+        Error.captureStackTrace(this);
+    }
+}
+
 export class BadRequestError extends Error {
     constructor(msg: string) {
         super(msg);
@@ -53,7 +63,12 @@ export class ServerError extends Error {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const handleError = (err: NotFoundError | BadRequestError | TypeError | Error, req: Request, res: Response, next: NextFunction) => {
+export const handleError = (
+    err: NotFoundError | NotAcceptableError | BadRequestError | TypeError | Error,
+    _req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
     const error = new ApiError();
     error.status = 503;
     error.message = 'Service Unavailable';
@@ -65,6 +80,11 @@ export const handleError = (err: NotFoundError | BadRequestError | TypeError | E
 
     if (err instanceof BadRequestError) {
         error.status = 400;
+        error.message = err.message;
+    }
+
+    if (err instanceof NotAcceptableError) {
+        error.status = 406;
         error.message = err.message;
     }
 
