@@ -52,6 +52,16 @@ Lo único que tiene que correr es:
 $ make run
 ```
 
+Cuando vea los siguientes mensajes la aplicación ya estará lista para ser usada.
+
+```shell
+2022-06-03 06:51:55.5155 [INFO] [server/server.util.js]: Listening at port 8080
+2022-06-03 06:51:55.5155 [INFO] [build/app.js]: IoC loaded correctly...
+2022-06-03 06:51:55.5155 [INFO] [build/app.js]: Middlewares loaded correctly...
+2022-06-03 06:51:55.5155 [INFO] [build/app.js]: Routes loaded correctly...
+2022-06-03 06:51:55.5155 [INFO] [build/app.js]: Error handler loaded correctly...
+```
+
 ### Esto puede ser de gran ayuda
 
 Debido a que el archivo a procesar es demasiado grande y tardaría apróximadamente 2~3 horas con la configuración propuesta, he colocado en la raíz de este proyecto el backup del volumen de datos tanto para DynamoDB y PostgreSQL
